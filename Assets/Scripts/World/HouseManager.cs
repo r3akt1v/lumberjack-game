@@ -15,6 +15,9 @@ public class HouseManager : MonoBehaviour
     };
     const float DoorW = 1.25f;
     const float DoorH = 2.3f;
+    // visual door leaf size per stage (matches doorway in model)
+    static readonly float[] DoorWidths = { 0f, 1.0f, 1.05f, 1.15f, 1.3f, 1.5f };
+    static readonly float[] DoorHeights = { 0f, 1.9f, 2.1f, 2.2f, 2.3f, 2.5f };
 
     int appliedLevel = -1;
     Light interiorLight;
@@ -75,6 +78,39 @@ public class HouseManager : MonoBehaviour
         interiorLight.range = Mathf.Max(7f, w * 0.9f);
         interiorLight.intensity = lvl >= 4 ? 1.8f : 1.1f;
         interiorLight.enabled = true;
+
+        BuildDoor(lvl, w, d);
+    }
+
+    void BuildDoor(int lvl, float w, float d)
+    {
+        float dw = DoorWidths[lvl];
+        float dh = DoorHeights[lvl];
+        // hinge pivot at left edge of doorway (as seen from outside, +Z)
+        var pivot = new GameObject("DoorPivot");
+        pivot.transform.SetParent(transform, false);
+        pivot.transform.localPosition = new Vector3(-dw / 2f, 0f, d / 2f - 0.08f);
+
+        var leaf = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        leaf.name = "DoorLeaf";
+        leaf.transform.SetParent(pivot.transform, false);
+        leaf.transform.localPosition = new Vector3(dw / 2f, dh / 2f, 0f);
+        leaf.transform.localScale = new Vector3(dw - 0.04f, dh, 0.08f);
+        var lr = leaf.GetComponent<Renderer>();
+        lr.sharedMaterial = new Material(Shader.Find("Standard")) { color = new Color(0.42f, 0.26f, 0.13f) };
+        // knob
+        var knob = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        knob.name = "Knob";
+        knob.transform.SetParent(leaf.transform, false);
+        knob.transform.localPosition = new Vector3(0.85f, 0f, -0.09f);
+        knob.transform.localScale = Vector3.one * 0.09f;
+        knob.GetComponent<Renderer>().sharedMaterial = new Material(Shader.Find("Standard")) { color = new Color(0.75f, 0.6f, 0.25f) };
+
+        var col = leaf.GetComponent<BoxCollider>();
+        col.size = Vector3.one; // cube already sized via scale
+        var door = pivot.AddComponent<Door>();
+        door.leaf = pivot.transform; // rotate the hinge pivot, not the leaf centre
+        door.leafCol = col;
     }
 
     void Wall(Vector3 center, Vector3 size)

@@ -32,6 +32,7 @@ public class UIManager : MonoBehaviour
         BuildShop();
         BuildStartScreen();
         BuildPause();
+        gameObject.AddComponent<Minimap>().Init(p.transform, canvas);
         player.SetCursorLocked(false); // start screen needs cursor
     }
 
@@ -123,10 +124,11 @@ public class UIManager : MonoBehaviour
         promptText.raycastTarget = false;
 
         // goal panel right
-        var gp = Panel("GoalPanel", canvas.transform, new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-220, 120), new Vector2(400, 120));
-        goalText = Label("Goal", gp.transform, "", 18, TextAnchor.UpperLeft, new Vector2(0, 20), new Vector2(380, 30));
+        var gp = Panel("GoalPanel", canvas.transform, new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-230, 120), new Vector2(420, 130));
+        goalText = Label("Goal", gp.transform, "", 17, TextAnchor.UpperLeft, new Vector2(0, 20), new Vector2(400, 34));
         goalText.rectTransform.pivot = new Vector2(0, 1);
-        goalText.rectTransform.anchoredPosition = new Vector2(10, 55);
+        goalText.rectTransform.anchoredPosition = new Vector2(10, 58);
+        goalText.horizontalOverflow = HorizontalWrapMode.Wrap;
         var barBg = Panel("BarBg", gp.transform, new Vector2(0, 0.5f), new Vector2(0, 0.5f), new Vector2(0, -15), new Vector2(380, 14));
         barBg.GetComponent<Image>().color = new Color(0, 0, 0, 0.6f);
         var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
@@ -136,16 +138,18 @@ public class UIManager : MonoBehaviour
         frt.offsetMin = Vector2.zero; frt.offsetMax = Vector2.zero;
         goalBarFill = fillGo.GetComponent<Image>();
         goalBarFill.color = new Color(0.4f, 0.85f, 0.4f);
-        goalProgressText = Label("GoalProg", gp.transform, "", 16, TextAnchor.MiddleCenter, new Vector2(0, -40), new Vector2(380, 24), new Color(0.8f, 0.9f, 0.8f));
+        goalProgressText = Label("GoalProg", gp.transform, "", 16, TextAnchor.MiddleCenter, new Vector2(0, -42), new Vector2(400, 24), new Color(0.8f, 0.9f, 0.8f));
+        goalProgressText.horizontalOverflow = HorizontalWrapMode.Wrap;
 
         // toast
         toastText = Label("Toast", canvas.transform, "", 26, TextAnchor.MiddleCenter, new Vector2(0, 220), new Vector2(900, 50), new Color(1f, 0.9f, 0.5f));
 
         // controls hint bottom-left
-        var hp = Panel("Hint", canvas.transform, new Vector2(0, 0), new Vector2(0, 0), new Vector2(220, 30), new Vector2(440, 60));
+        var hp = Panel("Hint", canvas.transform, new Vector2(0, 0), new Vector2(0, 0), new Vector2(300, 30), new Vector2(600, 60));
         hp.GetComponent<Image>().color = new Color(0, 0, 0, 0.35f);
-        Label("HintText", hp.transform, "WASD — ход  |  Shift — бег  |  ЛКМ — рубить  |  E — действие  |  B — магазин", 15,
-            TextAnchor.MiddleCenter, Vector2.zero, new Vector2(430, 50), new Color(0.85f, 0.9f, 0.85f));
+        var hintT = Label("HintText", hp.transform, "WASD — ход  |  Shift — бег  |  ЛКМ — рубить  |  E — действие  |  B — магазин", 15,
+            TextAnchor.MiddleCenter, Vector2.zero, new Vector2(580, 50), new Color(0.85f, 0.9f, 0.85f));
+        hintT.horizontalOverflow = HorizontalWrapMode.Wrap;
 
         // sell value hint near prompt (shown dynamically)
         sellHintText = Label("SellHint", canvas.transform, "", 20, TextAnchor.MiddleCenter, new Vector2(0, 100), new Vector2(500, 40), new Color(0.6f, 1f, 0.6f));

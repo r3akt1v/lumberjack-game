@@ -17,6 +17,12 @@ public class DayNightCycle : MonoBehaviour
         Instance = this;
     }
 
+    Transform sunDisc;
+    Transform moonDisc;
+    Camera cam;
+    static readonly Color NightSky = new Color(0.02f, 0.03f, 0.08f);
+    static readonly Color DaySky = new Color(0.45f, 0.65f, 0.9f);
+
     void Start()
     {
         if (sun == null)
@@ -30,6 +36,25 @@ public class DayNightCycle : MonoBehaviour
         }
         baseSunIntensity = sun.intensity;
         RenderSettings.sun = sun;
+        cam = Camera.main;
+        sunDisc = MakeDisc("SunDisc", new Color(1f, 0.92f, 0.65f), 34f);
+        moonDisc = MakeDisc("MoonDisc", new Color(0.85f, 0.88f, 0.95f), 22f);
+    }
+
+    Transform MakeDisc(string name, Color color, float scale)
+    {
+        var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        go.name = name;
+        var col = go.GetComponent<Collider>();
+        if (col != null) Destroy(col);
+        go.transform.localScale = Vector3.one * scale;
+        var sh = Resources.Load<Shader>("Shaders/SkyDisc");
+        var mat = new Material(sh != null ? sh : Shader.Find("Unlit/Color"));
+        if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
+        else mat.color = color;
+        go.GetComponent<Renderer>().sharedMaterial = mat;
+        go.transform.SetParent(transform, true);
+        return go.transform;
     }
 
     void Update()
@@ -60,6 +85,16 @@ public class DayNightCycle : MonoBehaviour
         float fogDay = 0.0035f, fogNight = 0.012f;
         RenderSettings.fogDensity = Mathf.Lerp(fogNight, fogDay, dayness);
         RenderSettings.fogColor = Color.Lerp(new Color(0.05f, 0.07f, 0.12f), new Color(0.75f, 0.82f, 0.9f), dayness);
+
+        // sky discs: sun opposite to light travel dir, moon along it
+        if (cam != null)
+        {
+            Vector3 cp = cam.transform.position;
+            Vector3 dir = sun.transform.forward;
+            if (sunDisc != null) sunDisc.position = cp - dir * 420f;
+            if (moonDisc != null) moonDisc.position = cp + dir * 420f;
+            cam.backgroundColor = Color.Lerp(NightSky, DaySky, dayness);
+        }
 
         // skybox procedural gradient via ambient is enough; use default skybox tinted by ambient
         if (sun != null)

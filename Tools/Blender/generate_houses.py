@@ -86,12 +86,10 @@ def init_mats():
     DOORM  = mat("DoorM",  (0.42, 0.26, 0.13), 0.8)
 
 def pyramid_roof(name, cx, cy, z, w, d, h, material):
-    # 4-sided cone scaled to footprint
+    # 4-sided cone scaled so base ellipse matches footprint w x d
     r = max(w, d) / 2 * 1.12
     o = cone(name, (cx, cy, z + h/2), r, 0.0, h, material, vertices=4, rot=(0, 0, math.radians(45)))
-    o.scale = (w / (2*r) * 2, d / (2*r) * 2, 1)
-    # simpler: nonuniform scale to match footprint
-    o.scale = (w / (r*2) * 2, d / (r*2) * 2, 1)
+    o.scale = (w / (2*r), d / (2*r), 1)
     return o
 
 def wall_with_door(name, cx, cy, z, w, h, d, door_w, door_h, material, door_x=0.0):
@@ -142,11 +140,8 @@ def make_house_shed():
     box("Left", (-w/2, 0, h/2), (t, d, h), WALL2)
     box("Right", (w/2, 0, h/2), (t, d, h), WALL2)
     wall_with_door("Front", 0, -d/2, 0, w, h, t, 1.0, 1.9, WALL2)
-    box("Roof", (0, 0, h+0.7), (w+0.5, d+0.5, 0.14), ROOF)
-    box("Roof2", (0, 0, h+0.7), (w+0.5, d+0.5, 0.14), ROOF)
-    bpy.context.active_object.rotation_euler = (math.radians(8), 0, 0)
-    bpy.context.active_object.location.z += 0.35
-    bpy.context.active_object.name = "Roof"
+    pyramid_roof("Roof", 0, 0, h, w + 0.5, d + 0.5, 1.1, ROOF)
+    interior("Int", w, d, h, with_bed=False)
     finish("house_shed")
 
 # ============ STAGE 2: CABIN ============

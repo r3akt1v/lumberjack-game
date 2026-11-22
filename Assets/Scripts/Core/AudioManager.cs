@@ -34,6 +34,7 @@ public class AudioManager : MonoBehaviour
             case "buy": src.PlayOneShot(Tone(700, 0.12f, 0.4f)); break;
             case "error": src.PlayOneShot(Tone(150, 0.2f, 0.4f)); break;
             case "levelup": src.PlayOneShot(Tone(523, 0.1f, 0.4f)); break;
+            case "door": src.PlayOneShot(Tone(160, 0.22f, 0.35f)); break;
         }
     }
 
