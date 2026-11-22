@@ -7,7 +7,7 @@ public class Door : MonoBehaviour, IInteractable
     public BoxCollider leafCol;
     public bool isOpen;
     public float angle;
-    const float OpenAngle = 105f;
+    const float OpenAngle = -100f; // opens outward, away from the interior
 
     public string Prompt => isOpen ? "[E] Закрыть дверь" : "[E] Открыть дверь";
     public float Range => 3.2f;
@@ -24,6 +24,5 @@ public class Door : MonoBehaviour, IInteractable
         if (Mathf.Approximately(angle, target)) return;
         angle = Mathf.MoveTowards(angle, target, 160f * Time.deltaTime);
         if (leaf != null) leaf.localRotation = Quaternion.Euler(0f, angle, 0f);
-        if (leafCol != null) leafCol.enabled = angle < 30f;
     }
 }

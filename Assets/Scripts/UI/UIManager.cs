@@ -105,13 +105,16 @@ public class UIManager : MonoBehaviour
         ch.raycastTarget = false;
 
         // top-left resources panel
-        var res = Panel("Resources", canvas.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(160, -80), new Vector2(280, 150));
-        moneyText = Label("Money", res.transform, "Монеты: 0", 24, TextAnchor.MiddleLeft, new Vector2(0, 40), new Vector2(260, 40), new Color(1f, 0.9f, 0.4f));
-        moneyText.rectTransform.pivot = new Vector2(0, 0.5f);
-        moneyText.rectTransform.anchoredPosition = new Vector2(10, 45);
-        carryText = Label("Carry", res.transform, "Груз: 0/5", 20, TextAnchor.MiddleLeft, Vector2.zero, new Vector2(260, 30), new Color(0.8f, 0.95f, 0.8f));
-        carryText.rectTransform.pivot = new Vector2(0, 0.5f);
-        carryText.rectTransform.anchoredPosition = new Vector2(10, 5);
+        var res = Panel("Resources", canvas.transform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(175, -80), new Vector2(350, 150));
+        moneyText = Label("Money", res.transform, "Монеты: 0", 22, TextAnchor.MiddleLeft, Vector2.zero, new Vector2(320, 36), new Color(1f, 0.9f, 0.4f));
+        moneyText.rectTransform.anchorMin = moneyText.rectTransform.anchorMax = new Vector2(0, 1);
+        moneyText.rectTransform.pivot = new Vector2(0, 1);
+        moneyText.rectTransform.anchoredPosition = new Vector2(14, -10);
+        carryText = Label("Carry", res.transform, "Груз: 0/5", 16, TextAnchor.MiddleLeft, Vector2.zero, new Vector2(320, 60), new Color(0.8f, 0.95f, 0.8f));
+        carryText.rectTransform.anchorMin = carryText.rectTransform.anchorMax = new Vector2(0, 1);
+        carryText.rectTransform.pivot = new Vector2(0, 1);
+        carryText.rectTransform.anchoredPosition = new Vector2(14, -50);
+        carryText.horizontalOverflow = HorizontalWrapMode.Wrap;
 
         // time top-right
         var tp = Panel("TimePanel", canvas.transform, new Vector2(1, 1), new Vector2(1, 1), new Vector2(-120, -50), new Vector2(220, 70));
@@ -124,10 +127,11 @@ public class UIManager : MonoBehaviour
         promptText.raycastTarget = false;
 
         // goal panel right
-        var gp = Panel("GoalPanel", canvas.transform, new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-230, 120), new Vector2(420, 130));
-        goalText = Label("Goal", gp.transform, "", 17, TextAnchor.UpperLeft, new Vector2(0, 20), new Vector2(400, 34));
+        var gp = Panel("GoalPanel", canvas.transform, new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-235, 120), new Vector2(430, 130));
+        goalText = Label("Goal", gp.transform, "", 17, TextAnchor.UpperLeft, Vector2.zero, new Vector2(400, 40));
+        goalText.rectTransform.anchorMin = goalText.rectTransform.anchorMax = new Vector2(0, 1);
         goalText.rectTransform.pivot = new Vector2(0, 1);
-        goalText.rectTransform.anchoredPosition = new Vector2(10, 58);
+        goalText.rectTransform.anchoredPosition = new Vector2(14, -8);
         goalText.horizontalOverflow = HorizontalWrapMode.Wrap;
         var barBg = Panel("BarBg", gp.transform, new Vector2(0, 0.5f), new Vector2(0, 0.5f), new Vector2(0, -15), new Vector2(380, 14));
         barBg.GetComponent<Image>().color = new Color(0, 0, 0, 0.6f);

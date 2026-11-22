@@ -108,9 +108,20 @@ public class HouseManager : MonoBehaviour
 
         var col = leaf.GetComponent<BoxCollider>();
         col.size = Vector3.one; // cube already sized via scale
-        var door = pivot.AddComponent<Door>();
+        // Door lives on the house root so raycasts on leaf OR zone resolve it
+        var door = GetComponent<Door>();
+        if (door == null) door = gameObject.AddComponent<Door>();
         door.leaf = pivot.transform; // rotate the hinge pivot, not the leaf centre
         door.leafCol = col;
+
+        // invisible interaction zone in the doorway so the door can be targeted
+        // (and closed) from both sides even while the leaf is swung open
+        var zone = new GameObject("DoorZone");
+        zone.transform.SetParent(transform, false); // house space: must NOT swing with the door
+        zone.transform.localPosition = new Vector3(0f, dh / 2f, d / 2f);
+        var zc = zone.AddComponent<BoxCollider>();
+        zc.size = new Vector3(dw + 0.5f, dh + 0.4f, 0.7f);
+        zc.isTrigger = true;
     }
 
     void Wall(Vector3 center, Vector3 size)
