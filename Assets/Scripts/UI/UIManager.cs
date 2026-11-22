@@ -127,13 +127,13 @@ public class UIManager : MonoBehaviour
         promptText.raycastTarget = false;
 
         // goal panel right
-        var gp = Panel("GoalPanel", canvas.transform, new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-235, 120), new Vector2(430, 130));
-        goalText = Label("Goal", gp.transform, "", 17, TextAnchor.UpperLeft, Vector2.zero, new Vector2(400, 40));
+        var gp = Panel("GoalPanel", canvas.transform, new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-225, 120), new Vector2(390, 120));
+        goalText = Label("Goal", gp.transform, "", 16, TextAnchor.UpperLeft, Vector2.zero, new Vector2(360, 40));
         goalText.rectTransform.anchorMin = goalText.rectTransform.anchorMax = new Vector2(0, 1);
         goalText.rectTransform.pivot = new Vector2(0, 1);
         goalText.rectTransform.anchoredPosition = new Vector2(14, -8);
         goalText.horizontalOverflow = HorizontalWrapMode.Wrap;
-        var barBg = Panel("BarBg", gp.transform, new Vector2(0, 0.5f), new Vector2(0, 0.5f), new Vector2(0, -15), new Vector2(380, 14));
+        var barBg = Panel("BarBg", gp.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -18), new Vector2(350, 14));
         barBg.GetComponent<Image>().color = new Color(0, 0, 0, 0.6f);
         var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
         fillGo.transform.SetParent(barBg.transform, false);
@@ -142,7 +142,7 @@ public class UIManager : MonoBehaviour
         frt.offsetMin = Vector2.zero; frt.offsetMax = Vector2.zero;
         goalBarFill = fillGo.GetComponent<Image>();
         goalBarFill.color = new Color(0.4f, 0.85f, 0.4f);
-        goalProgressText = Label("GoalProg", gp.transform, "", 16, TextAnchor.MiddleCenter, new Vector2(0, -42), new Vector2(400, 24), new Color(0.8f, 0.9f, 0.8f));
+        goalProgressText = Label("GoalProg", gp.transform, "", 15, TextAnchor.MiddleCenter, new Vector2(0, -40), new Vector2(360, 22), new Color(0.8f, 0.9f, 0.8f));
         goalProgressText.horizontalOverflow = HorizontalWrapMode.Wrap;
 
         // toast

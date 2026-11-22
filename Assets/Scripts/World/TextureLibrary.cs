@@ -16,9 +16,11 @@ public static class TextureLibrary
         { "Leaves", "needles" }, { "Leaves2", "needles" },
         { "LeafB", "bushleaf" }, { "LeafB2", "bushleaf" },
         { "GrassA", "grassblade" }, { "GrassB", "grassblade" },
-        { "Rock", "rock" }, { "Stone", "rock" },
+        { "Rock", "rock" },
         { "Roof", "roof" }, { "Roof2", "roof" }, { "Roof3", "roof" }, { "RoofM", "roof" },
-        { "Wall", "plaster" }, { "Wall2", "plaster" }, { "Wall3", "plaster" },
+        // houses are built from planks: walls = plank siding, columns/chimney = dark wood
+        { "Wall", "floorwood" }, { "Wall2", "wood" }, { "Wall3", "wooddark" },
+        { "Stone", "wooddark" },
         { "FloorW", "floorwood" },
         { "Metal", "metal" }, { "MetalD", "metal" },
     };
