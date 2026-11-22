@@ -33,6 +33,8 @@ public class GameBootstrap : MonoBehaviour
         camGo.transform.localPosition = new Vector3(0, 1.62f, 0);
         var cam = camGo.AddComponent<Camera>();
         cam.nearClipPlane = 0.05f; cam.fieldOfView = 70f;
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = new Color(0.45f, 0.65f, 0.9f);
         camGo.AddComponent<AudioListener>();
 
         var fps = pgo.AddComponent<FPSController>();
@@ -45,6 +47,10 @@ public class GameBootstrap : MonoBehaviour
         // UI
         var ui = new GameObject("UI").AddComponent<UIManager>();
         ui.Init(fps);
+
+        // debug: -autostart skips the start screen (used for automated testing)
+        foreach (var a in System.Environment.GetCommandLineArgs())
+            if (a == "-autostart") ui.StartGame();
 
         // tree felled -> drop logs
         Tree.OnFelled += OnTreeFelled;

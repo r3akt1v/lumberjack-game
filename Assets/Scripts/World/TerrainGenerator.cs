@@ -45,7 +45,7 @@ public class TerrainGenerator : MonoBehaviour
         return mesh;
     }
 
-    public static Texture2D BuildGroundTexture(int size = 1024)
+    public static Texture2D BuildGroundTexture(int size = 512)
     {
         var tex = new Texture2D(size, size, TextureFormat.RGBA32, true);
         var px = new Color32[size * size];

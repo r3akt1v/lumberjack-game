@@ -8,6 +8,9 @@ os.makedirs(OUT_DIR, exist_ok=True)
 
 def clean_scene():
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    # ensure truly empty (factory startup may still add Cube/Camera/Light)
+    for o in list(bpy.context.scene.objects):
+        bpy.data.objects.remove(o, do_unlink=True)
 
 def mat(name, color, rough=0.8):
     m = bpy.data.materials.new(name)
@@ -268,6 +271,7 @@ MODELS = [make_tree, make_stump, make_log, make_plank, make_rock, make_grass,
 
 for fn in MODELS:
     try:
+        clean_scene()
         fn()
         print("OK", fn.__name__)
     except Exception as e:

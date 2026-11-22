@@ -34,6 +34,13 @@ public class FPSController : MonoBehaviour
         }
     }
 
+    public void SetView(float pitchDeg, float yawDeg)
+    {
+        pitch = pitchDeg; yaw = yawDeg;
+        transform.rotation = Quaternion.Euler(0, yaw, 0);
+        if (cam != null) cam.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
+    }
+
     // cursor locking is managed by UIManager (start screen / pause / shop)
 
     public void SetCursorLocked(bool locked)

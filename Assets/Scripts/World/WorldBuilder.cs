@@ -20,12 +20,16 @@ public class WorldBuilder : MonoBehaviour
 
     void Start()
     {
+        float t0 = Time.realtimeSinceStartup;
         treePrefab = Resources.Load<GameObject>("Models/tree_pine");
         BuildTerrain();
+        Debug.Log($"[World] terrain built {Time.realtimeSinceStartup - t0:F1}s");
         BuildWater();
         BuildClearing();
         ScatterVegetation();
+        Debug.Log($"[World] vegetation done {Time.realtimeSinceStartup - t0:F1}s, trees={trees.Count}");
         BuildGrass();
+        Debug.Log($"[World] READY total {Time.realtimeSinceStartup - t0:F1}s");
     }
 
     public float GroundY(float x, float z) => TerrainMath.Height(x, z);
@@ -34,7 +38,7 @@ public class WorldBuilder : MonoBehaviour
     {
         var gen = gameObject.AddComponent<TerrainGenerator>();
         var mesh = gen.Build();
-        var tex = TerrainGenerator.BuildGroundTexture(1024);
+        var tex = TerrainGenerator.BuildGroundTexture(512);
         var mat = new Material(Shader.Find("Standard"));
         mat.mainTexture = tex;
         mat.color = Color.white;

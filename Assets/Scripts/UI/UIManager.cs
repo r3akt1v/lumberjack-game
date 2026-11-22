@@ -231,6 +231,14 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void StartGame()
+    {
+        bool hasSave = SaveManager.Instance != null && SaveManager.Instance.HasSave;
+        if (hasSave) SaveManager.Instance.Load();
+        startPanel.SetActive(false);
+        player.SetCursorLocked(true);
+    }
+
     // ---------- start & pause ----------
     void BuildStartScreen()
     {
@@ -243,12 +251,7 @@ public class UIManager : MonoBehaviour
             20, TextAnchor.MiddleCenter, new Vector2(0, -160), new Vector2(900, 120), new Color(0.7f, 0.78f, 0.7f));
 
         bool hasSave = SaveManager.Instance != null && SaveManager.Instance.HasSave;
-        MakeButton("PlayBtn", startPanel.transform, "ИГРАТЬ", new Vector2(0, -280), new Vector2(300, 60), () =>
-        {
-            if (hasSave) SaveManager.Instance.Load();
-            startPanel.SetActive(false);
-            player.SetCursorLocked(true);
-        });
+        MakeButton("PlayBtn", startPanel.transform, "ИГРАТЬ", new Vector2(0, -280), new Vector2(300, 60), StartGame);
         if (hasSave)
         {
             MakeButton("NewBtn", startPanel.transform, "НОВАЯ ИГРА", new Vector2(0, -360), new Vector2(300, 50), () =>
@@ -294,6 +297,21 @@ public class UIManager : MonoBehaviour
     {
         var gm = GameManager.Instance;
         if (gm == null || player == null) return;
+
+        // keep cursor free while any menu is open
+        if (startPanel.activeSelf || pausePanel.activeSelf || shopOpen)
+        {
+            if (Cursor.lockState != CursorLockMode.None) Cursor.lockState = CursorLockMode.None;
+            if (!Cursor.visible) Cursor.visible = true;
+        }
+
+        // start game with Enter or any mouse click on the start screen
+        if (startPanel.activeSelf && (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0)))
+        {
+            Debug.Log("[UI] start game triggered");
+            var btn = startPanel.transform.Find("PlayBtn")?.GetComponent<Button>();
+            if (btn != null) btn.onClick.Invoke();
+        }
 
         // cursor/pause handling
         if (Input.GetKeyDown(KeyCode.Escape))
