@@ -86,6 +86,23 @@ public class TerrainGenerator : MonoBehaviour
 
                 // subtle noise
                 float v = 0.92f + n2 * 0.16f;
+                c = new Color(
+                    Mathf.Clamp01(c.r + (n2 - 0.5f) * 0.1f),
+                    Mathf.Clamp01(c.g + (n2 - 0.5f) * 0.1f),
+                    Mathf.Clamp01(c.b + (n2 - 0.5f) * 0.08f));
+
+                // fine grain + grass speckle + pebbles
+                float n3 = Noise.Fbm(wx * 0.9f + 53f, wz * 0.9f - 29f, 2);
+                float grain = (n3 - 0.5f) * 0.22f;
+                c = new Color(
+                    Mathf.Clamp01(c.r * (1f + grain)),
+                    Mathf.Clamp01(c.g * (1f + grain)),
+                    Mathf.Clamp01(c.b * (1f + grain * 0.6f)));
+                if (h > 0.5f && h < 4f && n3 > 0.68f)
+                    c = Color.Lerp(c, new Color(0.2f, 0.42f, 0.15f), 0.35f);   // dark grass flecks
+                else if (h > 0.4f && n3 > 0.78f)
+                    c = Color.Lerp(c, new Color(0.55f, 0.54f, 0.5f), 0.4f);    // pebbles
+
                 px[y * size + x] = new Color32(
                     (byte)(Mathf.Clamp01(c.r * v) * 255),
                     (byte)(Mathf.Clamp01(c.g * v) * 255),

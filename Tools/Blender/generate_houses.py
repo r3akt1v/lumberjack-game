@@ -50,6 +50,21 @@ def cone(name, loc, r1, r2, height, material, vertices=7, rot=(0,0,0)):
     assign(o, material)
     return o
 
+def ensure_uvs():
+    for o in bpy.context.scene.objects:
+        if o.type != 'MESH' or len(o.data.uv_layers) > 0:
+            continue
+        bpy.ops.object.select_all(action='DESELECT')
+        o.select_set(True)
+        bpy.context.view_layer.objects.active = o
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        try:
+            bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02)
+        except Exception as e:
+            print("UV FAIL", o.name, e)
+        bpy.ops.object.mode_set(mode='OBJECT')
+
 def finish(name):
     bpy.ops.object.select_all(action='DESELECT')
     objs = [o for o in bpy.context.scene.objects if o.type == 'MESH']
@@ -58,6 +73,7 @@ def finish(name):
     if objs:
         bpy.context.view_layer.objects.active = objs[0]
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    ensure_uvs()
     path = os.path.join(OUT_DIR, name + ".fbx")
     bpy.ops.export_scene.fbx(filepath=path, use_selection=False,
                              global_scale=1.0, bake_anim=False,

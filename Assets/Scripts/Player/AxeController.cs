@@ -34,6 +34,7 @@ public class AxeController : MonoBehaviour
                 inst.transform.localPosition = new Vector3(0.02f, -0.34f, 0.1f);
                 inst.transform.localRotation = Quaternion.Euler(0f, -18f, 0f);
                 inst.transform.localScale = Vector3.one * 0.68f;
+                TextureLibrary.Apply(inst);
                 axeView = go.transform;
             }
         }

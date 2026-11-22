@@ -71,6 +71,7 @@ public class GameBootstrap : MonoBehaviour
             p.y = TerrainMath.Height(p.x, p.z) + 0.4f;
             var go = Instantiate(logModel, p, Quaternion.Euler(0, Random.Range(0, 360), 0));
             go.name = "PickupLog";
+            TextureLibrary.Apply(go);
             var pk = go.AddComponent<Pickup>();
             pk.kind = Pickup.Kind.Log;
             var col = go.AddComponent<BoxCollider>();

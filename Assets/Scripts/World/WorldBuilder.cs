@@ -38,7 +38,7 @@ public class WorldBuilder : MonoBehaviour
     {
         var gen = gameObject.AddComponent<TerrainGenerator>();
         var mesh = gen.Build();
-        var tex = TerrainGenerator.BuildGroundTexture(512);
+        var tex = TerrainGenerator.BuildGroundTexture(1024);
         var mat = new Material(Shader.Find("Standard"));
         mat.mainTexture = tex;
         mat.color = Color.white;
@@ -107,6 +107,7 @@ public class WorldBuilder : MonoBehaviour
         pos.y = TerrainMath.Height(pos.x, pos.z);
         var go = Instantiate(model, pos, Quaternion.Euler(0, yaw, 0), propsRoot ?? transform);
         go.name = "Sawmill";
+        TextureLibrary.Apply(go);
         var sm = go.AddComponent<Sawmill>();
         var col = go.AddComponent<BoxCollider>();
         col.center = new Vector3(0, 1.2f, 0);
@@ -124,6 +125,7 @@ public class WorldBuilder : MonoBehaviour
         pos.y = TerrainMath.Height(pos.x, pos.z);
         var go = Instantiate(model, pos, Quaternion.Euler(0, yaw, 0), propsRoot ?? transform);
         go.name = "SellCrate";
+        TextureLibrary.Apply(go);
         var sp = go.AddComponent<SellPoint>();
         var col = go.AddComponent<BoxCollider>();
         col.center = new Vector3(0, 0.8f, 0);
@@ -141,6 +143,7 @@ public class WorldBuilder : MonoBehaviour
         pos.y = TerrainMath.Height(pos.x, pos.z);
         var sg = Instantiate(model, pos, Quaternion.Euler(0, yaw, 0), propsRoot ?? transform);
         sg.name = "Sign";
+        TextureLibrary.Apply(sg);
         var sc = sg.AddComponent<CapsuleCollider>();
         sc.radius = 0.2f; sc.height = 1.8f; sc.center = new Vector3(0, 0.9f, 0);
     }
@@ -194,6 +197,7 @@ public class WorldBuilder : MonoBehaviour
             {
                 var vis = Instantiate(treePrefab, go.transform);
                 vis.name = "Visual";
+                TextureLibrary.Apply(vis);
             }
             var tree = go.AddComponent<Tree>();
             var col = go.AddComponent<CapsuleCollider>();
@@ -230,6 +234,7 @@ public class WorldBuilder : MonoBehaviour
             float y = TerrainMath.Height(x, z);
             var go = Instantiate(model, new Vector3(x, y, z),
                 Quaternion.Euler(0, (float)rng.NextDouble() * 360f, 0), propsRoot);
+            TextureLibrary.Apply(go);
             float s = minScale + (float)rng.NextDouble() * (maxScale - minScale);
             go.transform.localScale = Vector3.one * s;
             if (kind == ColliderKind.Capsule)
@@ -261,6 +266,7 @@ public class WorldBuilder : MonoBehaviour
             if (!ValidSpot(x, z, 10f, 0.6f)) continue;
             var go = Instantiate(model, new Vector3(x, TerrainMath.Height(x, z), z),
                 Quaternion.Euler(0, -ang * Mathf.Rad2Deg + 90f, 0), propsRoot);
+            TextureLibrary.Apply(go);
             go.transform.localScale = Vector3.one * 1.2f;
             var fc = go.AddComponent<BoxCollider>();
             fc.size = new Vector3(2.0f, 1.2f, 0.3f);

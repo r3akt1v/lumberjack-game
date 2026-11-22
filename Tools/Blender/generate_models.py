@@ -23,6 +23,21 @@ def mat(name, color, rough=0.8):
 def assign(obj, material):
     obj.data.materials.append(material)
 
+def ensure_uvs():
+    for o in bpy.context.scene.objects:
+        if o.type != 'MESH' or len(o.data.uv_layers) > 0:
+            continue
+        bpy.ops.object.select_all(action='DESELECT')
+        o.select_set(True)
+        bpy.context.view_layer.objects.active = o
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        try:
+            bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02)
+        except Exception as e:
+            print("UV FAIL", o.name, e)
+        bpy.ops.object.mode_set(mode='OBJECT')
+
 def finish(name):
     bpy.ops.object.select_all(action='DESELECT')
     objs = [o for o in bpy.context.scene.objects if o.type == 'MESH']
@@ -31,6 +46,7 @@ def finish(name):
     if objs:
         bpy.context.view_layer.objects.active = objs[0]
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    ensure_uvs()
     path = os.path.join(OUT_DIR, name + ".fbx")
     bpy.ops.export_scene.fbx(filepath=path, use_selection=False,
                              global_scale=1.0, bake_anim=False,
@@ -245,7 +261,7 @@ def make_sign():
     finish("sign")
 
 MODELS = [make_tree, make_stump, make_log, make_plank, make_rock, make_grass,
-          make_flower, make_axe, make_house, make_sawmill, make_crate, make_fence, make_bush, make_sign]
+          make_flower, make_axe, make_sawmill, make_crate, make_fence, make_bush, make_sign]
 
 for fn in MODELS:
     try:

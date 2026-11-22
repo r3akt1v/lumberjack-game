@@ -49,6 +49,7 @@ public class HouseManager : MonoBehaviour
             m.transform.localPosition = Vector3.zero;
             m.transform.localRotation = Quaternion.identity;
             m.transform.localScale = Vector3.one;
+            TextureLibrary.Apply(m);
         }
 
         // rebuild colliders: walls with doorway gap on +Z (front)
@@ -97,7 +98,8 @@ public class HouseManager : MonoBehaviour
         leaf.transform.localPosition = new Vector3(dw / 2f, dh / 2f, 0f);
         leaf.transform.localScale = new Vector3(dw - 0.04f, dh, 0.08f);
         var lr = leaf.GetComponent<Renderer>();
-        lr.sharedMaterial = new Material(Shader.Find("Standard")) { color = new Color(0.42f, 0.26f, 0.13f) };
+        var doorMat = TextureLibrary.For("WoodD") ?? new Material(Shader.Find("Standard")) { color = new Color(0.42f, 0.26f, 0.13f) };
+        lr.sharedMaterial = doorMat;
         // knob
         var knob = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         knob.name = "Knob";
