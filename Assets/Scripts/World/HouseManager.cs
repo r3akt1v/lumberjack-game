@@ -13,8 +13,8 @@ public class HouseManager : MonoBehaviour
         new Vector3(9.2f, 7.2f, 8.2f),
         new Vector3(11.2f, 10.6f, 9.2f),
     };
-    const float DoorW = 1.4f;
-    const float DoorH = 2.4f;
+    const float DoorW = 1.25f;
+    const float DoorH = 2.3f;
 
     int appliedLevel = -1;
     Light interiorLight;
