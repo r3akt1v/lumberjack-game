@@ -117,7 +117,7 @@ public class WorldBuilder : MonoBehaviour
         var col = go.AddComponent<BoxCollider>();
         col.center = new Vector3(0, 1.2f, 0);
         col.size = new Vector3(3.4f, 2.4f, 1.6f);
-        col.isTrigger = true;
+        // solid collider so player can't walk through; interaction via raycast still works
         var inter = go.AddComponent<Interactable>();
         inter.prompt = "[E] Загрузить брёвна в пилораму";
         inter.onInteract = () => sm.DepositLogs();
@@ -134,7 +134,6 @@ public class WorldBuilder : MonoBehaviour
         var col = go.AddComponent<BoxCollider>();
         col.center = new Vector3(0, 0.8f, 0);
         col.size = new Vector3(1.4f, 1.6f, 1.4f);
-        col.isTrigger = true;
         var inter = go.AddComponent<Interactable>();
         inter.prompt = "[E] Продать ресурсы";
         inter.onInteract = () => sp.Sell();
@@ -146,7 +145,10 @@ public class WorldBuilder : MonoBehaviour
         var model = Resources.Load<GameObject>("Models/sign");
         if (model == null) return;
         pos.y = TerrainMath.Height(pos.x, pos.z);
-        Instantiate(model, pos, Quaternion.Euler(0, yaw, 0), propsRoot ?? transform).name = "Sign";
+        var sg = Instantiate(model, pos, Quaternion.Euler(0, yaw, 0), propsRoot ?? transform);
+        sg.name = "Sign";
+        var sc = sg.AddComponent<CapsuleCollider>();
+        sc.radius = 0.2f; sc.height = 1.8f; sc.center = new Vector3(0, 0.9f, 0);
     }
 
     bool ValidSpot(float x, float z, float minR, float maxSlope)
@@ -207,16 +209,19 @@ public class WorldBuilder : MonoBehaviour
         }
 
         // bushes
-        SpawnScattered("Models/bush", bushCount, 0.7f, 1.4f, 0.4f, rng);
-        // flowers
-        SpawnScattered("Models/flower", flowerCount, 0.6f, 1.2f, 0.5f, rng);
+        SpawnScattered("Models/bush", bushCount, 0.7f, 1.4f, 0.4f, rng, ColliderKind.Capsule, 0.55f, 1.0f);
+        // flowers (walk-through, they're tiny)
+        SpawnScattered("Models/flower", flowerCount, 0.6f, 1.2f, 0.5f, rng, ColliderKind.None);
         // rocks
-        SpawnScattered("Models/rock", rockCount, 0.8f, 2.6f, 0.7f, rng);
+        SpawnScattered("Models/rock", rockCount, 0.8f, 2.6f, 0.7f, rng, ColliderKind.Capsule, 0.7f, 1.1f);
         // fences around clearing edge
         SpawnFences(rng);
     }
 
-    void SpawnScattered(string modelPath, int count, float minScale, float maxScale, float maxSlope, System.Random rng)
+    enum ColliderKind { None, Capsule, Box }
+
+    void SpawnScattered(string modelPath, int count, float minScale, float maxScale, float maxSlope, System.Random rng,
+        ColliderKind kind = ColliderKind.None, float colRadius = 0.5f, float colHeight = 1f)
     {
         var model = Resources.Load<GameObject>(modelPath);
         if (model == null) return;
@@ -232,6 +237,16 @@ public class WorldBuilder : MonoBehaviour
                 Quaternion.Euler(0, (float)rng.NextDouble() * 360f, 0), propsRoot);
             float s = minScale + (float)rng.NextDouble() * (maxScale - minScale);
             go.transform.localScale = Vector3.one * s;
+            if (kind == ColliderKind.Capsule)
+            {
+                var c = go.AddComponent<CapsuleCollider>();
+                c.radius = colRadius; c.height = colHeight; c.center = new Vector3(0, colHeight * 0.5f, 0);
+            }
+            else if (kind == ColliderKind.Box)
+            {
+                var c = go.AddComponent<BoxCollider>();
+                c.size = new Vector3(1.6f, 1.4f, 0.3f); c.center = new Vector3(0, 0.7f, 0);
+            }
             spawned++;
         }
     }
@@ -252,6 +267,9 @@ public class WorldBuilder : MonoBehaviour
             var go = Instantiate(model, new Vector3(x, TerrainMath.Height(x, z), z),
                 Quaternion.Euler(0, -ang * Mathf.Rad2Deg + 90f, 0), propsRoot);
             go.transform.localScale = Vector3.one * 1.2f;
+            var fc = go.AddComponent<BoxCollider>();
+            fc.size = new Vector3(2.0f, 1.2f, 0.3f);
+            fc.center = new Vector3(0, 0.6f, 0);
         }
     }
 

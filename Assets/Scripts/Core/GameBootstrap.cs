@@ -48,9 +48,14 @@ public class GameBootstrap : MonoBehaviour
         var ui = new GameObject("UI").AddComponent<UIManager>();
         ui.Init(fps);
 
-        // debug: -autostart skips the start screen (used for automated testing)
+        // debug: -autostart skips the start screen; -debugview adds diagnostics
+        bool dbg = false;
         foreach (var a in System.Environment.GetCommandLineArgs())
+        {
             if (a == "-autostart") ui.StartGame();
+            if (a == "-debugview") dbg = true;
+        }
+        if (dbg) StartCoroutine(DebugView());
 
         // tree felled -> drop logs
         Tree.OnFelled += OnTreeFelled;
@@ -72,6 +77,95 @@ public class GameBootstrap : MonoBehaviour
             col.size = new Vector3(0.7f, 0.7f, 1.5f);
             col.isTrigger = true;
         }
+    }
+
+    System.Collections.IEnumerator DebugView()
+    {
+        yield return new WaitForSeconds(2f);
+        // collider census
+        var cols = Object.FindObjectsByType<Collider>(FindObjectsSortMode.None);
+        Debug.Log($"[DBG] colliders total={cols.Length}");
+        var treesGo = GameObject.Find("Trees");
+        int treeCols = 0;
+        if (treesGo != null)
+            foreach (Transform t in treesGo.transform)
+                if (t.GetComponent<Collider>() != null) treeCols++;
+        Debug.Log($"[DBG] trees={(treesGo != null ? treesGo.transform.childCount : -1)} withCollider={treeCols}");
+
+        // dump bounds of every model prefab
+        foreach (var m in new[] { "tree_pine", "stump", "log", "plank", "rock", "bush", "flower", "axe", "house", "sawmill", "crate", "fence", "sign" })
+        {
+            var prefab = Resources.Load<GameObject>("Models/" + m);
+            if (prefab == null) { Debug.Log($"[DBG] model {m} MISSING"); continue; }
+            var tmp = Instantiate(prefab, new Vector3(0, -500, 0), Quaternion.identity);
+            var rs = tmp.GetComponentsInChildren<Renderer>();
+            if (rs.Length > 0)
+            {
+                var b = rs[0].bounds; foreach (var r in rs) b.Encapsulate(r.bounds);
+                Debug.Log($"[DBG] model {m} bounds={b.size}");
+            }
+            else Debug.Log($"[DBG] model {m} no renderers");
+            Destroy(tmp);
+        }
+
+        // teleport player next to nearest tree, face it
+        Tree nearest = null; float best = 1e9f;
+        if (treesGo != null)
+            foreach (Transform t in treesGo.transform)
+            {
+                float d = (t.position - Vector3.zero).sqrMagnitude;
+                if (d < best) { best = d; nearest = t.GetComponent<Tree>(); }
+            }
+        var p = GameObject.FindGameObjectWithTag("Player");
+        if (nearest != null && p != null)
+        {
+            Vector3 tp = nearest.transform.position;
+            Vector3 flat = new Vector3(tp.x - p.transform.position.x, 0, tp.z - p.transform.position.z).normalized;
+            // stand 4m away at trunk height, look slightly up at foliage
+            var cc = p.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+            p.transform.position = tp - flat * 4f + Vector3.up * 0.2f;
+            p.transform.position = new Vector3(p.transform.position.x, tp.y + 0.2f, p.transform.position.z);
+            if (cc != null) cc.enabled = true;
+            var fps = p.GetComponent<FPSController>();
+            if (fps != null)
+            {
+                float yaw = Mathf.Atan2(flat.x, flat.z) * Mathf.Rad2Deg;
+                fps.SetView(-8f, yaw); // look slightly up at crown
+            }
+            Debug.Log($"[DBG] teleported near tree at {tp} yaw-check");
+            // dump tree transform + visual bounds
+            Debug.Log($"[DBG] treeGO pos={nearest.transform.position} rot={nearest.transform.eulerAngles} scale={nearest.transform.lossyScale}");
+            var vis = nearest.transform.Find("Visual");
+            if (vis != null)
+            {
+                Debug.Log($"[DBG] visual localPos={vis.localPosition} localRot={vis.localEulerAngles} localScale={vis.localScale}");
+                var rs = vis.GetComponentsInChildren<Renderer>();
+                if (rs.Length > 0)
+                {
+                    var b = rs[0].bounds; foreach (var r in rs) b.Encapsulate(r.bounds);
+                    Debug.Log($"[DBG] visual bounds size={b.size} center={b.center} renderers={rs.Length}");
+                }
+            }
+        }
+        yield return new WaitForSeconds(1f);
+        // raycast diagnostics from camera
+        var camT = Camera.main != null ? Camera.main.transform : null;
+        if (camT != null)
+        {
+            Debug.Log($"[DBG] cam pos={camT.position} fwd={camT.forward}");
+            foreach (var off in new[] { Vector3.zero, new Vector3(0, 0.3f, 0), new Vector3(0, -0.3f, 0), new Vector3(0.3f, 0, 0), new Vector3(-0.3f, 0, 0) })
+            {
+                var d = camT.forward + camT.TransformDirection(off) * 0.15f;
+                if (Physics.Raycast(camT.position, d.normalized, out var h, 300f))
+                    Debug.Log($"[DBG] ray{off} hit {h.collider.name} d={h.distance:F1}");
+                else Debug.Log($"[DBG] ray{off} NOTHING");
+            }
+        }
+        yield return new WaitForSeconds(1f);
+        string path = System.IO.Path.Combine(Application.persistentDataPath, "debug_view.png");
+        ScreenCapture.CaptureScreenshot(path);
+        Debug.Log("[DBG] screenshot -> " + path);
     }
 
     void OnDestroy()
