@@ -1,0 +1,7 @@
+Library/
+Logs/
+UserSettings/
+Builds/
+*.csproj
+*.slnx
+.DS_Store
