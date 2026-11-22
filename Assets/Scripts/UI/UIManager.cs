@@ -220,14 +220,25 @@ public class UIManager : MonoBehaviour
             var btnText = btn != null ? btn.GetComponentInChildren<Text>() : null;
             var lvlT = row.transform.Find("Lvl_" + id)?.GetComponent<Text>();
             bool maxed = !u.canBuy();
-            if (btnText != null) btnText.text = maxed ? "МАКС" : gm.NextCost(u) + " монет";
+            int pc = gm.NextPlankCost(u);
+            if (btnText != null)
+            {
+                if (maxed) btnText.text = "МАКС";
+                else if (pc > 0) btnText.text = $"{pc} досок" + (gm.NextCost(u) > 0 ? $" + {gm.NextCost(u)} монет" : "");
+                else btnText.text = gm.NextCost(u) + " монет";
+            }
             if (lvlT != null)
             {
                 int lvl = u.id == "axe_dmg" ? gm.axeDamageLevel : u.id == "axe_spd" ? gm.axeSpeedLevel
                         : u.id == "carry" ? gm.carryLevel : gm.houseLevel;
                 lvlT.text = "Уровень " + lvl + "/" + (u.costs.Length);
+                if (u.id == "house")
+                {
+                    string[] stages = { "", "Сарай", "Домик", "Дом", "Вилла", "Особняк" };
+                    lvlT.text = "Этап " + lvl + ": " + stages[Mathf.Clamp(lvl, 1, 5)];
+                }
             }
-            if (btn != null) btn.interactable = !maxed && gm.money >= gm.NextCost(u);
+            if (btn != null) btn.interactable = !maxed && gm.money >= gm.NextCost(u) && gm.planksCarried >= gm.NextPlankCost(u);
         }
     }
 

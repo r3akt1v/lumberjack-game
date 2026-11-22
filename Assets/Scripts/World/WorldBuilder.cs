@@ -82,28 +82,22 @@ public class WorldBuilder : MonoBehaviour
 
     void BuildClearing()
     {
-        // clearing around spawn: house at (-8,0), sawmill at (10,6), crate at (4,-8)
-        SpawnHouse(new Vector3(-14f, 0, -10f), 35f);
-        SpawnSawmill(new Vector3(12f, 0, -4f), 200f);
-        SpawnCrate(new Vector3(2f, 0, -14f), 160f);
-        SpawnSign(new Vector3(-4f, 0, -20f), 90f);
+        // clearing on the dry plateau: house (-14,-14), sawmill (10,-6), crate (4,-12)
+        SpawnHouse(new Vector3(-14f, 0, -14f), 120f);
+        SpawnSawmill(new Vector3(10f, 0, -6f), 200f);
+        SpawnCrate(new Vector3(4f, 0, -12f), 160f);
+        SpawnSign(new Vector3(-5f, 0, -8f), 60f);
         // welcome sign
-        SpawnSign(new Vector3(0f, 0, -24f), 0f);
+        SpawnSign(new Vector3(0f, 0, -18f), 0f);
     }
 
     void SpawnHouse(Vector3 pos, float yaw)
     {
-        var model = Resources.Load<GameObject>("Models/house");
-        if (model == null) return;
         pos.y = TerrainMath.Height(pos.x, pos.z);
-        var go = Instantiate(model, pos, Quaternion.Euler(0, yaw, 0), propsRoot ?? transform);
-        go.name = "House";
-        var hm = go.AddComponent<HouseManager>();
-        // disable upgrade parts initially handled by HouseManager
-        var col = go.AddComponent<BoxCollider>();
-        col.center = new Vector3(0, 3f, 0);
-        col.size = new Vector3(7f, 6f, 6f);
-        // porch part collider not needed (decor)
+        var go = new GameObject("House");
+        go.transform.SetParent(propsRoot ?? transform, false);
+        go.transform.SetPositionAndRotation(pos, Quaternion.Euler(0, yaw, 0));
+        go.AddComponent<HouseManager>();
     }
 
     void SpawnSawmill(Vector3 pos, float yaw)
@@ -183,9 +177,10 @@ public class WorldBuilder : MonoBehaviour
             float z = (float)(rng.NextDouble() * 2 - 1) * TerrainMath.Half * 0.9f;
             if (!ValidSpot(x, z, 20f, 0.55f)) continue;
             // keep clearing near buildings
-            if (Mathf.Abs(x + 14) < 9 && Mathf.Abs(z + 10) < 9) continue;
-            if (Mathf.Abs(x - 12) < 7 && Mathf.Abs(z + 4) < 7) continue;
-            if (Mathf.Abs(x - 2) < 6 && Mathf.Abs(z + 14) < 6) continue;
+            if (Mathf.Abs(x + 14) < 10 && Mathf.Abs(z + 14) < 10) continue;
+            if (Mathf.Abs(x - 10) < 7 && Mathf.Abs(z + 6) < 7) continue;
+            if (Mathf.Abs(x - 4) < 6 && Mathf.Abs(z + 12) < 6) continue;
+            if (Mathf.Abs(x) < 6 && Mathf.Abs(z + 10) < 8) continue;
 
             float y = TerrainMath.Height(x, z);
             var go = new GameObject("Tree");
@@ -260,9 +255,9 @@ public class WorldBuilder : MonoBehaviour
         for (int i = 0; i < n; i++)
         {
             float ang = i / (float)n * Mathf.PI * 2f;
-            float r = 17f + (float)rng.NextDouble() * 4f;
+            float r = 19f + (float)rng.NextDouble() * 4f;
             float x = Mathf.Cos(ang) * r;
-            float z = Mathf.Sin(ang) * r - 6f;
+            float z = Mathf.Sin(ang) * r - 8f;
             if (!ValidSpot(x, z, 10f, 0.6f)) continue;
             var go = Instantiate(model, new Vector3(x, TerrainMath.Height(x, z), z),
                 Quaternion.Euler(0, -ang * Mathf.Rad2Deg + 90f, 0), propsRoot);

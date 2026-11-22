@@ -166,6 +166,26 @@ public class GameBootstrap : MonoBehaviour
         string path = System.IO.Path.Combine(Application.persistentDataPath, "debug_view.png");
         ScreenCapture.CaptureScreenshot(path);
         Debug.Log("[DBG] screenshot -> " + path);
+
+        // house check: stand in front of the door and screenshot
+        var house = GameObject.Find("House");
+        var p2 = GameObject.FindGameObjectWithTag("Player");
+        if (house != null && p2 != null)
+        {
+            Vector3 hp = house.transform.position;
+            Vector3 front = house.transform.forward; // door faces +Z local
+            var cc2 = p2.GetComponent<CharacterController>();
+            if (cc2 != null) cc2.enabled = false;
+            p2.transform.position = hp + front * 11f + Vector3.up * 0.2f;
+            p2.transform.position = new Vector3(p2.transform.position.x, TerrainMath.Height(p2.transform.position.x, p2.transform.position.z) + 0.2f, p2.transform.position.z);
+            if (cc2 != null) cc2.enabled = true;
+            var fps2 = p2.GetComponent<FPSController>();
+            if (fps2 != null) fps2.SetView(0f, Quaternion.LookRotation(-front).eulerAngles.y);
+            yield return new WaitForSeconds(1.5f);
+            string hp2 = System.IO.Path.Combine(Application.persistentDataPath, "house_view.png");
+            ScreenCapture.CaptureScreenshot(hp2);
+            Debug.Log("[DBG] house screenshot -> " + hp2 + " housePos=" + hp);
+        }
     }
 
     void OnDestroy()

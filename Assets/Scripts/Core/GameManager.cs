@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
         public string name;
         public string desc;
         public int[] costs;
+        public int[] plankCosts; // optional: paid in carried planks instead of money
         public int level;
         public Func<bool> canBuy;
         public Action apply;
@@ -81,9 +82,10 @@ public class GameManager : MonoBehaviour
             apply = () => { carryLevel++; }
         });
         upgrades.Add(new UpgradeDef {
-            id = "house", name = "Дом",
-            desc = "+10% к цене продажи за уровень, улучшает внешний вид",
-            costs = new[] { 0, 500, 1500, 4000, 10000 }, level = 1,
+            id = "house", name = "Улучшить дом",
+            desc = "Дом растёт от сарая до особняка. Тратит Доски. +10% к цене продажи",
+            costs = new[] { 0, 0, 0, 0, 0 },
+            plankCosts = new[] { 0, 8, 20, 45, 90 }, level = 1,
             canBuy = () => houseLevel < 5,
             apply = () => { houseLevel++; }
         });
@@ -93,8 +95,10 @@ public class GameManager : MonoBehaviour
     {
         int idx = Mathf.Clamp(u.level, 0, u.costs.Length - 1);
         int cost = u.costs[idx];
-        if (money < cost || !u.canBuy()) return false;
+        int pcost = NextPlankCost(u);
+        if (money < cost || planksCarried < pcost || !u.canBuy()) return false;
         money -= cost;
+        planksCarried -= pcost;
         u.apply();
         // sync def level
         if (u.id == "axe_dmg") u.level = axeDamageLevel;
@@ -109,6 +113,13 @@ public class GameManager : MonoBehaviour
     {
         int idx = Mathf.Clamp(u.level, 0, u.costs.Length - 1);
         return u.costs[idx];
+    }
+
+    public int NextPlankCost(UpgradeDef u)
+    {
+        if (u.plankCosts == null) return 0;
+        int idx = Mathf.Clamp(u.level, 0, u.plankCosts.Length - 1);
+        return u.plankCosts[idx];
     }
 
     public bool HasCarrySpace(int n = 1) => logsCarried + planksCarried + n <= CarryCapacity;
