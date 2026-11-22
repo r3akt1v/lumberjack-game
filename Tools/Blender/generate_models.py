@@ -154,12 +154,21 @@ def make_flower():
     finish("flower")
 
 def make_axe():
-    wood = mat("Wood", (0.55, 0.35, 0.18), 0.8)
-    metal = mat("Metal", (0.6, 0.62, 0.65), 0.4)
-    # handle along +Z (up); head near top pointing +X
-    cyl("Handle", (0, 0, 0.45), 0.035, 0.9, wood, vertices=6)
-    box("Head", (0.1, 0, 0.78), (0.3, 0.07, 0.16), metal, bevel=0.01)
-    cone("Edge", (0.24, 0, 0.78), 0.05, 0.0, 0.18, metal, vertices=4, rot=(0, math.radians(90), 0))
+    wood = mat("Wood", (0.5, 0.3, 0.14), 0.8)
+    woodD = mat("WoodD", (0.35, 0.2, 0.1), 0.85)
+    metal = mat("Metal", (0.72, 0.74, 0.78), 0.35)
+    metalD = mat("MetalD", (0.45, 0.47, 0.5), 0.45)
+    # handle along +Z (up), grip wrap at bottom, big head near top
+    cyl("Handle", (0, 0, 0.48), 0.04, 0.96, wood, vertices=7)
+    cyl("Grip", (0, 0, 0.12), 0.048, 0.22, woodD, vertices=7)
+    cyl("Pommel", (0, 0, 0.02), 0.06, 0.05, metalD, vertices=7)
+    # head: poll (top), blade block, beard, sharpened edge facing +Y->front
+    box("HeadPoll", (0, 0, 0.86), (0.1, 0.09, 0.12), metalD, bevel=0.015)
+    box("Head", (0.14, 0, 0.78), (0.34, 0.1, 0.18), metal, bevel=0.015)
+    box("HeadBack", (-0.1, 0, 0.76), (0.14, 0.09, 0.2), metalD, bevel=0.01)
+    # blade edge: flattened wedge on +X side
+    box("Blade", (0.3, 0, 0.78), (0.16, 0.03, 0.22), metal, bevel=0.005)
+    cone("EdgeTip", (0.4, 0, 0.78), 0.05, 0.0, 0.2, metal, vertices=4, rot=(0, math.radians(90), 0))
     finish("axe")
 
 def make_house():

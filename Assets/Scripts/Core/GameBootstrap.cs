@@ -186,6 +186,18 @@ public class GameBootstrap : MonoBehaviour
             ScreenCapture.CaptureScreenshot(hp2);
             Debug.Log("[DBG] house screenshot -> " + hp2 + " housePos=" + hp);
         }
+
+        // axe check: pitch camera down to frame the viewmodel
+        var p3 = GameObject.FindGameObjectWithTag("Player");
+        var fps3 = p3 != null ? p3.GetComponent<FPSController>() : null;
+        if (fps3 != null)
+        {
+            fps3.SetView(-30f, 0f);
+            yield return new WaitForSeconds(0.5f);
+            string ap = System.IO.Path.Combine(Application.persistentDataPath, "axe_view.png");
+            ScreenCapture.CaptureScreenshot(ap);
+            Debug.Log("[DBG] axe screenshot -> " + ap);
+        }
     }
 
     void OnDestroy()

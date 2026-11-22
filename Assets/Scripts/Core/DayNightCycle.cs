@@ -5,7 +5,7 @@ public class DayNightCycle : MonoBehaviour
     public static DayNightCycle Instance { get; private set; }
 
     [Range(0f, 1f)] public float timeOfDay = 0.35f; // 0=midnight .25=sunrise .5=noon .75=sunset
-    public float dayLengthMinutes = 12f;
+    public float dayLengthMinutes = 5f;
     public Light sun;
     public float ambientIntensity = 1f;
 

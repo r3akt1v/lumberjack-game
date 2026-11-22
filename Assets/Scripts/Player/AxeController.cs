@@ -30,9 +30,10 @@ public class AxeController : MonoBehaviour
                 go.transform.SetParent(cameraTransform, false);
                 var inst = Instantiate(model, go.transform);
                 inst.name = "AxeModel";
-                inst.transform.localPosition = new Vector3(0, -0.05f, 0);
-                inst.transform.localRotation = Quaternion.Euler(-90f, 0, 0); // align handle to view
-                inst.transform.localScale = Vector3.one * 0.9f;
+                // model: handle bottom at origin, head up top, blade edge +X
+                inst.transform.localPosition = new Vector3(0.02f, -0.34f, 0.1f);
+                inst.transform.localRotation = Quaternion.Euler(0f, -18f, 0f);
+                inst.transform.localScale = Vector3.one * 0.68f;
                 axeView = go.transform;
             }
         }
